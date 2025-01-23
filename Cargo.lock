@@ -2293,6 +2293,7 @@ dependencies = [
  "dialoguer",
  "hex",
  "inline_colorization",
+ "num-bigint",
  "spinners",
  "tokio",
  "toner",

@@ -1,13 +1,12 @@
 use clap::{Parser, Subcommand};
-use toner::contracts::wallet::KeyPair;
-use toner::contracts::wallet::mnemonic::Mnemonic;
-use tonlib::cell::TonCellError;
+use tonlib::cell::{TonCellError};
 use tonlib::client::{TonClient, TonClientBuilder, TonClientInterface, TonConnectionParams};
 use tonlib::tl::{BlocksShards};
 use tonlib::wallet::{TonWallet, WalletVersion};
 use dialoguer::{theme::ColorfulTheme, Select};
 use inline_colorization::{color_bright_green, color_green, color_red, color_reset, color_yellow};
 use spinners::{Spinner, Spinners};
+use tonlib::mnemonic::{KeyPair, Mnemonic};
 
 pub const TESTNET_CONFIG: &str = include_str!("../testnet-global.config.json");
 
@@ -49,10 +48,20 @@ fn validate_shard(net_shards: Vec<u64>, shard: u64) -> Result<(), String> {
 
 /// Generate a new mnemonic
 fn generate_key_pair() -> (KeyPair, String) {
-    let bip_mnem = bip39::Mnemonic::generate(24).unwrap();
-    //todo: cannot convert bip39 mnemonic to tonlib mnemonic directly
-    let ton_contract_mnem: Mnemonic = bip_mnem.to_string().parse().unwrap();
-    let kp: KeyPair = ton_contract_mnem.generate_keypair(None).unwrap();
+    let mut bip_mnem;
+    let tonlib_mnem ;
+    loop {
+        bip_mnem = bip39::Mnemonic::generate(24).unwrap();
+        tonlib_mnem = match Mnemonic::from_str(&bip_mnem.to_string(), &None) {
+            Ok(mnem) => {mnem},
+            Err(_) => {
+                continue
+            },
+        };
+        break;
+    }
+
+    let kp: KeyPair = tonlib_mnem.to_key_pair().unwrap();
 
     (kp, bip_mnem.to_string())
 }
@@ -180,12 +189,13 @@ async fn main() {
                 let maby_account_shard =  get_shard(&net_shards, wallet.address.to_hex().as_str());
                 if let Some(account_shard) = maby_account_shard {
                     if account_shard == shard {
-                        println!();
+                        println!("Save this information for later use:");
+                        println!("{color_green}Shard is FOUND <:). account_shard: {:x?}, expected: {:x?}{color_reset}", account_shard, shard);
                         println!("Wallet address: {color_yellow}{:?}{color_reset}", wallet.address);
                         println!("Wallet address(HEX): {color_yellow}{:?}{color_reset}", wallet.address.to_hex());
-                        println!("{color_green}Shard is FOUND <:). account_shard: {:x?}, expected: {:x?}{color_reset}", account_shard, shard);
                         println!("Account mnemonic: {color_bright_green}{:?}{color_reset}", mnemonic_string);
                         sp.stop_with_newline();
+
                         break;
                     } else {
                         println!("{color_red}Shard is not equal to assigned shard, got: {:x?}, expect: {:x?}{color_reset}", account_shard, shard);

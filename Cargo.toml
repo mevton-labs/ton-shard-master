@@ -15,3 +15,4 @@ tokio = { version = "1.0.0", features = ["rt", "rt-multi-thread", "macros"] }
 dialoguer = "0.11.0"
 inline_colorization = "0.1.6"
 spinners = "4.1.1"
+num-bigint = "0.4.6"

@@ -1,3 +1,4 @@
+use std::str::FromStr;
 use clap::{Parser, Subcommand};
 use tonlib::cell::{TonCellError};
 use tonlib::client::{TonClient, TonClientBuilder, TonClientInterface, TonConnectionParams};
@@ -6,6 +7,7 @@ use tonlib::wallet::{TonWallet, WalletVersion};
 use dialoguer::{theme::ColorfulTheme, Select};
 use inline_colorization::{color_bright_green, color_green, color_red, color_reset, color_yellow};
 use spinners::{Spinner, Spinners};
+use tonlib::address::TonAddress;
 use tonlib::mnemonic::{KeyPair, Mnemonic};
 
 pub const TESTNET_CONFIG: &str = include_str!("../testnet-global.config.json");
@@ -210,8 +212,9 @@ async fn main() {
 
         }
         Commands::Shard { address } => {
-            match get_shard(&net_shards, address.as_str()) {
-                Some(shard) => println!("Shard: {}", shard),
+            let ton_address = TonAddress::from_str(&address).unwrap();
+            match get_shard(&net_shards, ton_address.to_hex().as_str()) {
+                Some(shard) => println!("Shard: {:x?}", shard),
                 None => println!("Shard: Not found"),
             }
         }
@@ -239,6 +242,7 @@ mod tests {
             ("0:923150e0c668cb309dc3d43449be197e17f5095378260e7715e278eaa80941ab",0xa000000000000000),
             ("0:684c17d1138bcd4355aa88cc30dacba8cda4d8f3de4392cb5a7f4bec030190af",0x6000000000000000),
             ("0:51cca3ff74207b3ed8f075740b126c320e795ec4f19f70b80d9cf919fc292594",0x6000000000000000),
+            ("0:b19a8a1821d01279aeb98e84a2ed002e4a30633264702b1059cebe73100d6b95",0xac000000000000000),
         ];
 
         for (account_id, expect_shard) in addresses_shard {

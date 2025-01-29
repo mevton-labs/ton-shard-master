@@ -1,0 +1,10 @@
+[package]
+name = "tonlib_shards"
+version = "0.1.0"
+edition = "2021"
+description = "Library for detecting shard from TON address"
+
+[dependencies]
+tonlib = "0.17.6"
+anyhow = "1.0.95"
+hex = "0.4.3"

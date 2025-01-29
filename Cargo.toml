@@ -4,15 +4,16 @@ version = "0.1.0"
 edition = "2021"
 description = "Rust CLI app for generate a TON account with a specific shard"
 
+[workspace]
+members = ["tonlib_shards"]
+
+
 [dependencies]
 bip39 = { version = "2.1.0", features = ["rand","rand_core"] }
 clap = { version = "4.1", features = ["derive"] }
-hex = "0.4.3"
-toner = "0.3.2"
 tonlib = "0.17.6"
-anyhow = "1.0.95"
 tokio = { version = "1.0.0", features = ["rt", "rt-multi-thread", "macros"] }
 dialoguer = "0.11.0"
 inline_colorization = "0.1.6"
 spinners = "4.1.1"
-num-bigint = "0.4.6"
+tonlib_shards = { path = "tonlib_shards" }

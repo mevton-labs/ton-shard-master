@@ -194,6 +194,12 @@ async fn main() {
                         println!("Save this information for later use:");
                         println!("{color_green}Shard is FOUND <:). account_shard: {:x?}, expected: {:x?}{color_reset}", account_shard, shard);
                         println!("Wallet address: {color_yellow}{:?}{color_reset}", wallet.address);
+
+                        println!("Wallet address (bounceable, production): {color_yellow}{:?}{color_reset}", wallet.address.to_base64_url_flags(false, false));
+                        println!("Wallet address (non bounceable, production): {color_yellow}{:?}{color_reset}", wallet.address.to_base64_url_flags(true, false));
+                        println!("Wallet address (bounceable, non production): {color_yellow}{:?}{color_reset}", wallet.address.to_base64_url_flags(false, true));
+                        println!("Wallet address (non bounceable, non production): {color_yellow}{:?}{color_reset}", wallet.address.to_base64_url_flags(true, true));
+
                         println!("Wallet address(HEX): {color_yellow}{:?}{color_reset}", wallet.address.to_hex());
                         println!("Account mnemonic: {color_bright_green}{:?}{color_reset}", mnemonic_string);
                         sp.stop_with_newline();
